@@ -150,9 +150,10 @@ class TokenChecker {
                 
                 let errorMessage = 'Bilinmeyen Hata';
                 if (error && error.message) {
-                    if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+                    const errorMsg = error.message.toLowerCase();
+                    if (errorMsg.includes('enotfound') || errorMsg.includes('econnrefused')) {
                         errorMessage = 'Bağlantı Hatası - İnternet bağlantınızı kontrol edin';
-                    } else if (error.message.includes('rate limit')) {
+                    } else if (errorMsg.includes('rate limit')) {
                         errorMessage = 'Rate Limit - Çok fazla istek, lütfen bekleyin';
                     } else {
                         errorMessage = `Hata: ${error.message}`;
@@ -177,15 +178,16 @@ class TokenChecker {
                 
                 // Hata türüne göre daha açıklayıcı mesajlar
                 if (error && error.message) {
-                    if (error.message.includes('TOKEN_INVALID') || error.message.includes('Incorrect token')) {
+                    const errorMsg = error.message.toLowerCase();
+                    if (errorMsg.includes('token_invalid') || errorMsg.includes('incorrect token')) {
                         errorMessage = 'Geçersiz Token - Token formatı veya değeri hatalı';
-                    } else if (error.message.includes('DISALLOWED_INTENTS')) {
+                    } else if (errorMsg.includes('disallowed_intents')) {
                         errorMessage = 'Token geçerli ancak gerekli izinler eksik';
-                    } else if (error.message.includes('rate limit')) {
+                    } else if (errorMsg.includes('rate limit')) {
                         errorMessage = 'Rate Limit - Çok fazla giriş denemesi';
-                    } else if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+                    } else if (errorMsg.includes('enotfound') || errorMsg.includes('econnrefused')) {
                         errorMessage = 'Bağlantı Hatası - Discord sunucularına ulaşılamıyor';
-                    } else if (error.message.includes('ETIMEDOUT')) {
+                    } else if (errorMsg.includes('etimedout')) {
                         errorMessage = 'Zaman Aşımı - Bağlantı çok yavaş';
                     } else {
                         errorMessage = `Giriş Hatası: ${error.message}`;
