@@ -1,0 +1,7 @@
+node_modules/
+tokens.txt
+valid_tokens.txt
+invalid_tokens.txt
+.env
+*.log
+package-lock.json

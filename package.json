@@ -1,0 +1,16 @@
+{
+  "name": "discord-token-checker",
+  "version": "1.0.0",
+  "description": "Advanced Discord token checker with self-bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["discord", "token", "checker", "selfbot"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js-selfbot-v13": "^2.14.12",
+    "chalk": "^4.1.2"
+  }
+}
