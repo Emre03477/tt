@@ -45,17 +45,23 @@ class TokenChecker {
                 readyStatus: false
             });
 
+            let loginAttempted = false;
+            let loginSuccessful = false;
+
             const timeout = setTimeout(() => {
                 client.destroy();
                 resolve({
                     valid: false,
-                    error: 'Timeout',
+                    error: loginAttempted ? 'Zaman Aşımı - Giriş yanıt vermedi' : 'Zaman Aşımı',
                     token: token.substring(0, 40) + '...'
                 });
             }, 15000);
 
             client.on('ready', async () => {
                 clearTimeout(timeout);
+                loginSuccessful = true;
+                
+                console.log(chalk.green(`  ✓ Hesaba başarıyla giriş yapıldı!`));
                 
                 try {
                     const user = client.user;
@@ -134,7 +140,7 @@ class TokenChecker {
                     await client.destroy();
                     resolve({
                         valid: false,
-                        error: error.message,
+                        error: `Veri okuma hatası: ${error.message}`,
                         token: token.substring(0, 40) + '...'
                     });
                 }
@@ -143,19 +149,54 @@ class TokenChecker {
             client.on('error', async (error) => {
                 clearTimeout(timeout);
                 await client.destroy();
+                
+                let errorMessage = 'Bilinmeyen Hata';
+                if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+                    errorMessage = 'Bağlantı Hatası - İnternet bağlantınızı kontrol edin';
+                } else if (error.message.includes('rate limit')) {
+                    errorMessage = 'Rate Limit - Çok fazla istek, lütfen bekleyin';
+                } else {
+                    errorMessage = `Hata: ${error.message}`;
+                }
+                
                 resolve({
                     valid: false,
-                    error: error.message,
+                    error: errorMessage,
                     token: token.substring(0, 40) + '...'
                 });
             });
 
+            console.log(chalk.gray(`  → Giriş yapılıyor...`));
+            loginAttempted = true;
+            
             client.login(token).catch(async (error) => {
                 clearTimeout(timeout);
                 await client.destroy();
+                
+                let errorMessage = 'Geçersiz Token';
+                
+                // Hata türüne göre daha açıklayıcı mesajlar
+                if (error.message) {
+                    if (error.message.includes('TOKEN_INVALID') || error.message.includes('Incorrect token')) {
+                        errorMessage = 'Geçersiz Token - Token formatı veya değeri hatalı';
+                    } else if (error.message.includes('DISALLOWED_INTENTS')) {
+                        errorMessage = 'Token geçerli ancak gerekli izinler eksik';
+                    } else if (error.message.includes('rate limit')) {
+                        errorMessage = 'Rate Limit - Çok fazla giriş denemesi';
+                    } else if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+                        errorMessage = 'Bağlantı Hatası - Discord sunucularına ulaşılamıyor';
+                    } else if (error.message.includes('ETIMEDOUT')) {
+                        errorMessage = 'Zaman Aşımı - Bağlantı çok yavaş';
+                    } else {
+                        errorMessage = `Giriş Hatası: ${error.message}`;
+                    }
+                }
+                
+                console.log(chalk.red(`  ✗ Giriş başarısız: ${errorMessage}`));
+                
                 resolve({
                     valid: false,
-                    error: 'Geçersiz Token',
+                    error: errorMessage,
                     token: token.substring(0, 40) + '...'
                 });
             });
@@ -206,6 +247,8 @@ class TokenChecker {
     displayTokenInfo(info, index) {
         console.log(chalk.green('═══════════════════════════════════════════════════════════'));
         console.log(chalk.cyan.bold(`✅ Token #${index} - GEÇERLİ`));
+        console.log(chalk.green('═══════════════════════════════════════════════════════════'));
+        console.log(chalk.green.bold('✓ Durum: ') + chalk.white('Hesaba başarıyla giriş yapıldı!'));
         console.log(chalk.green('═══════════════════════════════════════════════════════════'));
         
         console.log(chalk.white.bold('\n👤 KULLANICI BİLGİLERİ:'));
@@ -266,8 +309,9 @@ class TokenChecker {
         console.log(chalk.red('═══════════════════════════════════════════════════════════'));
         console.log(chalk.red.bold(`❌ Token #${index} - GEÇERSİZ`));
         console.log(chalk.red('═══════════════════════════════════════════════════════════'));
-        console.log(chalk.gray(`Hata: ${info.error}`));
-        console.log(chalk.gray(`Token: ${info.token}`));
+        console.log(chalk.yellow('📌 Durum: ') + chalk.red('Hesaba giriş yapılamadı'));
+        console.log(chalk.yellow('⚠️  Hata Nedeni: ') + chalk.white(info.error));
+        console.log(chalk.yellow('🔑 Token (İlk 40 Karakter): ') + chalk.gray(info.token));
         console.log(chalk.red('═══════════════════════════════════════════════════════════\n'));
     }
 
