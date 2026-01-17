@@ -82,9 +82,19 @@ class TokenChecker {
                         createdAt: user.createdAt.toLocaleString('tr-TR'),
                         locale: userSettings?.locale || 'Bilinmiyor',
                         guilds: client.guilds.cache.size,
-                        friends: client.relationships?.friendCount || 0,
-                        blocked: client.relationships?.blockedCount || 0
+                        friends: 0,
+                        blocked: 0
                     };
+
+                    // Arkadaş ve engellenen sayısını al
+                    try {
+                        if (client.relationships && client.relationships.cache) {
+                            info.friends = client.relationships.cache.filter(r => r.type === 1).size || 0;
+                            info.blocked = client.relationships.cache.filter(r => r.type === 2).size || 0;
+                        }
+                    } catch (e) {
+                        // İlişki bilgileri alınamazsa varsayılan 0 kalır
+                    }
 
                     // Nitro bitiş tarihi
                     if (user.premiumType && user.premiumType !== 0) {
@@ -266,9 +276,14 @@ class TokenChecker {
         console.log(chalk.cyan('╔═══════════════════════════════════════════════════════════╗'));
         console.log(chalk.cyan('║') + chalk.white.bold('                      ÖZET RAPOR                          ') + chalk.cyan('║'));
         console.log(chalk.cyan('╠═══════════════════════════════════════════════════════════╣'));
-        console.log(chalk.cyan('║') + chalk.white(` Toplam Kontrol Edilen: ${chalk.yellow(this.checkedCount)}`.padEnd(58)) + chalk.cyan('║'));
-        console.log(chalk.cyan('║') + chalk.white(` Geçerli Token: ${chalk.green(this.validTokens.length)}`.padEnd(58)) + chalk.cyan('║'));
-        console.log(chalk.cyan('║') + chalk.white(` Geçersiz Token: ${chalk.red(this.invalidTokens.length)}`.padEnd(58)) + chalk.cyan('║'));
+        
+        const totalText = ` Toplam Kontrol Edilen: ${this.checkedCount}`;
+        const validText = ` Geçerli Token: ${this.validTokens.length}`;
+        const invalidText = ` Geçersiz Token: ${this.invalidTokens.length}`;
+        
+        console.log(chalk.cyan('║') + chalk.white(totalText.padEnd(58)) + chalk.cyan('║'));
+        console.log(chalk.cyan('║') + chalk.white(validText.padEnd(58)) + chalk.cyan('║'));
+        console.log(chalk.cyan('║') + chalk.white(invalidText.padEnd(58)) + chalk.cyan('║'));
         console.log(chalk.cyan('╚═══════════════════════════════════════════════════════════╝'));
 
         // Geçerli tokenleri dosyaya kaydet

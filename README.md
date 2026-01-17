@@ -1,5 +1,7 @@
 # 🚀 Gelişmiş Discord Token Checker
 
+> **⚠️ ÖNEMLİ UYARI:** Self-bot kullanımı Discord'un Kullanım Şartlarına aykırıdır ve hesabınızın kalıcı olarak yasaklanmasına neden olabilir. Bu araç yalnızca eğitim ve araştırma amaçlıdır. Kullanımdan doğabilecek tüm sorumluluk kullanıcıya aittir.
+
 Discord tokenlarınızı kontrol eden ve detaylı hesap bilgileri gösteren gelişmiş bir token checker sistemi.
 
 ## ✨ Özellikler
