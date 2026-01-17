@@ -46,7 +46,6 @@ class TokenChecker {
             });
 
             let loginAttempted = false;
-            let loginSuccessful = false;
 
             const timeout = setTimeout(() => {
                 client.destroy();
@@ -59,7 +58,6 @@ class TokenChecker {
 
             client.on('ready', async () => {
                 clearTimeout(timeout);
-                loginSuccessful = true;
                 
                 console.log(chalk.green(`  ✓ Hesaba başarıyla giriş yapıldı!`));
                 
@@ -151,12 +149,14 @@ class TokenChecker {
                 await client.destroy();
                 
                 let errorMessage = 'Bilinmeyen Hata';
-                if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
-                    errorMessage = 'Bağlantı Hatası - İnternet bağlantınızı kontrol edin';
-                } else if (error.message.includes('rate limit')) {
-                    errorMessage = 'Rate Limit - Çok fazla istek, lütfen bekleyin';
-                } else {
-                    errorMessage = `Hata: ${error.message}`;
+                if (error && error.message) {
+                    if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
+                        errorMessage = 'Bağlantı Hatası - İnternet bağlantınızı kontrol edin';
+                    } else if (error.message.includes('rate limit')) {
+                        errorMessage = 'Rate Limit - Çok fazla istek, lütfen bekleyin';
+                    } else {
+                        errorMessage = `Hata: ${error.message}`;
+                    }
                 }
                 
                 resolve({
@@ -176,7 +176,7 @@ class TokenChecker {
                 let errorMessage = 'Geçersiz Token';
                 
                 // Hata türüne göre daha açıklayıcı mesajlar
-                if (error.message) {
+                if (error && error.message) {
                     if (error.message.includes('TOKEN_INVALID') || error.message.includes('Incorrect token')) {
                         errorMessage = 'Geçersiz Token - Token formatı veya değeri hatalı';
                     } else if (error.message.includes('DISALLOWED_INTENTS')) {
