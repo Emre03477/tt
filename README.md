@@ -6,6 +6,17 @@ Discord tokenlarınızı kontrol eden ve detaylı hesap bilgileri gösteren geli
 
 ## ✨ Özellikler
 
+### 🔐 Gelişmiş Token Doğrulama
+- ✅ Token geçerliliği kontrolü ve oturum açma doğrulaması
+- 📡 Gerçek zamanlı giriş durumu takibi
+- 🔍 Hata türüne göre detaylı hata mesajları:
+  - Geçersiz token formatı
+  - Süresi dolmuş veya hatalı token
+  - Bağlantı hataları
+  - Rate limit (istek sınırı) uyarıları
+  - Zaman aşımı hataları
+- ✓ Başarılı giriş onay mesajları
+
 ### 📊 Temel Bilgiler
 - ✅ Token geçerliliği kontrolü
 - 👤 Kullanıcı adı, etiket ve ID
@@ -94,8 +105,13 @@ node index.js
 Program her token için detaylı bilgileri renkli ve düzenli bir şekilde gösterir:
 
 ```
+⏳ Token 1/1 kontrol ediliyor...
+
+  → Giriş yapılıyor...
 ═══════════════════════════════════════════════════════════
 ✅ Token #1 - GEÇERLİ
+═══════════════════════════════════════════════════════════
+✓ Durum: Hesaba başarıyla giriş yapıldı!
 ═══════════════════════════════════════════════════════════
 
 👤 KULLANICI BİLGİLERİ:
@@ -138,6 +154,30 @@ Program her token için detaylı bilgileri renkli ve düzenli bir şekilde göst
 🔑 TOKEN:
 └─ YOUR_TOKEN_HERE.XXXXXX.YYYYYYYYYYYYYYYYYYYYYYYY
 ```
+
+### Geçersiz Token Örneği:
+
+```
+⏳ Token 1/1 kontrol ediliyor...
+
+  → Giriş yapılıyor...
+═══════════════════════════════════════════════════════════
+❌ Token #1 - GEÇERSİZ
+═══════════════════════════════════════════════════════════
+📌 Durum: Hesaba giriş yapılamadı
+⚠️  Hata Nedeni: Geçersiz Token - Token formatı veya değeri hatalı
+🔑 Token (İlk 40 Karakter): INVALID_TOKEN_HERE...
+═══════════════════════════════════════════════════════════
+```
+
+### Hata Mesajları:
+
+Program farklı hata türlerine göre açıklayıcı mesajlar verir:
+- 🔴 **Geçersiz Token - Token formatı veya değeri hatalı**: Token yanlış veya süresi dolmuş
+- 🔴 **Bağlantı Hatası - Discord sunucularına ulaşılamıyor**: İnternet bağlantı sorunu
+- 🔴 **Rate Limit - Çok fazla giriş denemesi**: Çok fazla istek gönderildi, beklemek gerekiyor
+- 🔴 **Zaman Aşımı - Giriş yanıt vermedi**: Token kontrolü çok uzun sürdü
+- 🔴 **Token geçerli ancak gerekli izinler eksik**: Token çalışıyor ama bazı izinler eksik
 
 ## ⚠️ Önemli Notlar
 
